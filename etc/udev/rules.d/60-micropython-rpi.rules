@@ -1,0 +1,19 @@
+# /etc/udev/rules.d/60-micropython-rpi.rules
+
+# VID: 0x2E8A
+# PID: 0x0005
+
+SUBSYSTEM=="tty", \
+ATTRS{idVendor}=="2e8a", \
+ATTRS{idProduct}=="0005", \
+MODE="0666", \
+GROUP="dialout", \
+SYMLINK+="/dev/ttyACM%n"
+
+# Alternative rule
+SUBSYSTEM=="tty", \
+ATTRS{idVendor}=="2e8a", \
+ATTRS{product}=="MicroPython*", \
+MODE="0666", \
+GROUP="dialout", \
+SYMLINK+="/dev/ttyACM%n"
