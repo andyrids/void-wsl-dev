@@ -54,7 +54,7 @@ echo -e "[user]\ndefault=$USERNAME" > /etc/wsl.conf
 Grant `sudo` to `$USERNAME`:
 
 ```sh
-sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoer
+sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
 ```
 
 Microcontrollers attached to WSL are often placed in the dialout group by udev rules (/dev/ttyACM[0-9]). We will also create a custom rule
