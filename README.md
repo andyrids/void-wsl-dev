@@ -38,10 +38,10 @@ I use a profile within Windows Terminal (Microsoft Store), which is set to run V
 
 New user setup - replace `$USERNAME` with your username:
 
-```sh
+```bash
 useradd -m -G wheel -s /bin/bash $USERNAME
 passwd $USERNAME
-echo -e "[user]\ndefault=$USERNAME" > /etc/wsl.conf
+printf "[user]\ndefault=$USERNAME" > /etc/wsl.conf
 sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoer
 ```
 
