@@ -42,7 +42,7 @@ New user setup - replace `$USERNAME` with your username:
 useradd -m -G wheel -s /bin/bash $USERNAME
 passwd $USERNAME
 printf "[user]\ndefault=$USERNAME" > /etc/wsl.conf
-sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoer
+sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
 ```
 
 Make `$USERNAME` default user:
