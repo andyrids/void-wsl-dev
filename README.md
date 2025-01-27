@@ -125,7 +125,7 @@ command = "/etc/runit/1 && /etc/runit/2 && /etc/runit/3"
 
 The `[boot]` section will allow runit to start correctly.
 
-## Generate SSH key & add to SSH agent
+### Generate SSH key & add to SSH agent
 
 You can generate a new SSH key on your local machine. After you generate the key, you can add the public key to your account on GitHub.com to enable authentication for Git operations over SSH
 
