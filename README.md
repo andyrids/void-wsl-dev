@@ -125,6 +125,72 @@ command = "/etc/runit/1 && /etc/runit/2 && /etc/runit/3"
 
 The `[boot]` section will allow runit to start correctly.
 
+## Generate SSH key & add to SSH agent
+
+You can generate a new SSH key on your local machine. After you generate the key, you can add the public key to your account on GitHub.com to enable authentication for Git operations over SSH
+
+```sh
+ssh-keygen -t ed25519 -C "your_email@example.com"
+```
+
+When you're prompted to "Enter a file in which to save the key", you can press Enter to accept the default file location. At the prompt, type a secure passphrase.
+
+I use the following command line setting in Windows Terminal for the Void Linux profile - `C:\WINDOWS\system32\wsl.exe -d Void -e /bin/bash -li` along with the following `.bash_profile` config:
+
+```bash
+# .bash_profile
+
+# Define cleanup function for SSH agent
+# stops WSL 2 from failing to terminate
+# due to SSH agent still running
+function cleanup_ssh_agent() {
+    # Check if ssh-agent is running before attempting to kill it
+    if [ -n "$SSH_AGENT_PID" ]; then
+        ssh-agent -k > /dev/null 2>&1
+        unset SSH_AGENT_PID
+        unset SSH_AUTH_SOCK
+    fi
+}
+
+# Register the cleanup function to execute when the shell exits
+trap cleanup_ssh_agent EXIT
+
+# Your existing SSH agent initialization code
+# check if an SSH agent is running
+ssh-add -l &>/dev/null
+# exit code 2 means no agent is running at all
+if [ "$?" == 2 ]; then
+    # Could not open a connection to your authentication agent.
+
+    # Load stored agent connection info.
+    test -r ~/.ssh-agent && \
+        eval "$(<~/.ssh-agent)" >/dev/null
+
+    ssh-add -l &>/dev/null
+    if [ "$?" == 2 ]; then
+        # Start agent and store agent connection info.
+        (umask 066; ssh-agent > ~/.ssh-agent)
+        eval "$(<~/.ssh-agent)" >/dev/null
+    fi
+fi
+
+# Load identities
+ssh-add -l &>/dev/null
+if [ "$?" == 1 ]; then
+    # The agent has no identities.
+    # Time to add one.
+    ssh-add -t 4h
+fi
+
+# Get the aliases and functions
+[ -f $HOME/.bashrc ] && . $HOME/.bashrc
+
+. "$HOME/.local/bin/env"
+```
+
+This command and profile combination starts the SSH agent if not already and loads the SSH keys from `~/.ssh`, asking for the password you set. The SSH key is added to the agent with a 4 hour time window (`ssh-add -t 4h`) and the `cleanup_ssh_agent` function kills the agent if
+you type exit or close the Void Linux terminal window. This stops a running agent from preventing WSL2 automatic shutdown.
+
 ## 3. Setup USB Device Sharing to WSL2 (Microcontrollers)
 
 I use usbipd-win to share locally connected USB devices to other machines, including Hyper-V guests and WSL 2.
