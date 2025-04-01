@@ -125,9 +125,103 @@ command = "/etc/runit/1 && /etc/runit/2 && /etc/runit/3"
 
 The `[boot]` section will allow runit to start correctly.
 
+### Customisation
+
+I overwrite the default `~/.bashrc` file with the following settings:
+
+1. History Settings
+    1. No duplicate commands in history
+    2. Appending to history rather than overwriting
+    3. Larger history size settings
+2. Terminal Colors
+3. Colored Prompt
+    1. Username in bold green
+    2. Working directory in bold blue
+    3. Clear color resets between elements
+4. Command Coloring
+5. Aliases
+    1. l, la & ll (adapted from Ubuntu Server `.bashrc`)
+6. Environment Variables
+    1. Loaded from `$HOME/.local/bin/env`
+
+```sh
+# .bashrc
+
+# if not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+# don't put duplicate lines or lines starting with space in the history
+HISTCONTROL=ignoreboth
+
+# append to the history file, don't overwrite it
+shopt -s histappend
+
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+HISTSIZE=1000
+HISTFILESIZE=2000
+
+# check window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+# Enable color support for the terminal
+case "$TERM" in
+    xterm-color|*-256color) color_prompt=yes;;
+esac
+
+# You can uncomment this line to force color prompt
+#force_color_prompt=yes
+if [ -n "$force_color_prompt" ]; then
+    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+        color_prompt=yes
+    else
+        color_prompt=
+    fi
+fi
+
+# Set the colored prompt
+if [ "$color_prompt" = yes ]; then
+    PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+else
+    # Fall back to your original prompt if colors aren't supported
+    PS1='[\u@\h \W]\$ '
+fi
+unset color_prompt force_color_prompt
+
+# Set terminal title (if using xterm)
+case "$TERM" in
+xterm*|rxvt*)
+    PS1="\[\e]0;\u@\h: \w\a\]$PS1"
+    ;;
+*)
+    ;;
+esac
+
+# Enable color support for various commands
+if command -v dircolors >/dev/null; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
+
+# common aliases for ls
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+
+# load your environment variables
+if [ -f "$HOME/.local/bin/env" ]; then
+    . "$HOME/.local/bin/env"
+fi
+```
+
+To apply these settings, run `source ~/.bashrc`. Windows Terminal themes can be obtained from [Windows Terminal Themes](https://windowsterminalthemes.dev/). I am currently using [Cyber Cube](https://windowsterminalthemes.dev/?theme=Cyber%20Cube) and the `JetBrains Mono` font.
+
 ### Generate SSH key & add to SSH agent
 
-You can generate a new SSH key on your local machine. After you generate the key, you can add the public key to your account on GitHub.com to enable authentication for Git operations over SSH
+You can generate a new SSH key on your local machine. After you generate the key, you can add the public key to your account on GitHub.com to enable authentication for Git operations over SSH.
 
 ```sh
 ssh-keygen -t ed25519 -C "your_email@example.com"
